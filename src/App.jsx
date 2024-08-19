@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { fetchFlights } from './api';
 import FlightTable from './FlightTable';
 import FilterBar from './FilterBar';
 import Pagination from './Pagination';
@@ -17,47 +17,31 @@ const App = () => {
   const [itemsPerPage] = useState(5);
 
   useEffect(() => {
-    const fetchFlights = async () => {
+    const loadFlights = async () => {
       try {
-        const response = await axios.get(
-          'https://www.svo.aero/bitrix/timetable/',
-          {
-            params: {
-              direction,
-              locale: 'ru',
-              dateStart: date,
-              dateEnd: date,
-            },
-          }
-        );
+        const items = await fetchFlights(direction, date);
 
-        console.log('API Response:', response.data);
+        const formattedFlights = items.map((item) => ({
+          id: item.i_id,
+          flightNumber: item.flt,
+          airline: item.co.name,
+          city: direction === 'departure' ? item.mar2.city : item.mar1.city,
+          time:
+            direction === 'departure'
+              ? item.mar2.at || item.estimated_chin_start
+              : item.mar1.dt || item.estimated_chin_start,
+        }));
 
-        if (response.data && response.data.items) {
-          const formattedFlights = response.data.items.map((item) => ({
-            id: item.i_id,
-            flightNumber: item.flt,
-            airline: item.co.name,
-            city: direction === 'departure' ? item.mar2.city : item.mar1.city,
-            time:
-              direction === 'departure'
-                ? item.mar2.at || item.estimated_chin_start
-                : item.mar1.dt || item.estimated_chin_start,
-          }));
-          setFlights(formattedFlights);
-          setError(null);
-        } else {
-          setFlights([]);
-          setError('Ответ от API не содержит ожидаемые данные.');
-        }
+        setFlights(formattedFlights);
+        setError(null);
       } catch (error) {
-        console.error('Ошибка при получении данных:', error);
+        console.error(error.message);
         setFlights([]);
-        setError('Произошла ошибка при запросе данных.');
+        setError(error.message);
       }
     };
 
-    fetchFlights();
+    loadFlights();
   }, [direction, date]);
 
   const handleSort = (field) => {
@@ -121,6 +105,7 @@ export default App;
 // Начало дня - start, конец - end, использовать setUTCHours, преобразовать объект date и после toISOstring.
 // !!!!! ПЕРВЕСТИ В АПИ - ФЕТЧДАТА
 // Алгоритм дописать в файлике тест внизу
+// Доделать вишлист
 
 // function countVowels(str) {
 //   console.log(str);

@@ -1,13 +1,6 @@
 import React from 'react';
 
-const FilterBar = ({
-  direction,
-  setDirection,
-  search,
-  setSearch,
-  date,
-  setDate,
-}) => {
+const FilterBar = ({ setDirection, search, setSearch, date, setDate }) => {
   return (
     <div className="filters">
       <button onClick={() => setDirection('departure')}>Вылет</button>
