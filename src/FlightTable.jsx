@@ -22,26 +22,41 @@ const FlightTable = ({
           <th>
             Рейс
             <button onClick={() => handleSort('flightNumber')}>
-              {sortField === 'flightNumber' &&
-                (sortDirection === 'asc' ? '▲' : '▼')}
+              {sortField === 'flightNumber'
+                ? sortDirection === 'asc'
+                  ? '▲'
+                  : '▼'
+                : '⇕'}
             </button>
           </th>
           <th>
             Авиакомпания
             <button onClick={() => handleSort('airline')}>
-              {sortField === 'airline' && (sortDirection === 'asc' ? '▲' : '▼')}
+              {sortField === 'airline'
+                ? sortDirection === 'asc'
+                  ? '▲'
+                  : '▼'
+                : '⇕'}
             </button>
           </th>
           <th>
             Город
             <button onClick={() => handleSort('city')}>
-              {sortField === 'city' && (sortDirection === 'asc' ? '▲' : '▼')}
+              {sortField === 'city'
+                ? sortDirection === 'asc'
+                  ? '▲'
+                  : '▼'
+                : '⇕'}
             </button>
           </th>
           <th>
             Время
             <button onClick={() => handleSort('time')}>
-              {sortField === 'time' && (sortDirection === 'asc' ? '▲' : '▼')}
+              {sortField === 'time'
+                ? sortDirection === 'asc'
+                  ? '▲'
+                  : '▼'
+                : '⇕'}
             </button>
           </th>
         </tr>

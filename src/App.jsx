@@ -188,3 +188,75 @@ export default App;
 // }
 
 // console.log(sortByFrequency('Молоко'));
+
+// Фильтр по дате сделать, dateStart и dateEnd. И допилить инпут рейса (поиск).
+// Начало дня - start, конец - end, использовать setUTCHours, преобразовать объект date и после toISOstring.
+// !!!!! ПЕРВЕСТИ В АПИ - ФЕТЧДАТА
+// Алгоритм дописать в файлике тест внизу
+
+// function countVowels(str) {
+//   console.log(str);
+
+//   const vowels = 'aeious';
+
+//   str = str.toLowerCase();
+//   let count = 0;
+//   for (let char of str) {
+//     if (vowels.includes(char)) {
+//       count++;
+//     }
+//   }
+//   return count;
+// }
+
+// console.log(countVowels('Hi, WOrld!'));
+
+// function lengthOfLongestSubstring(s) {
+//   let maxLength = 0;
+//   let start = 0;
+//   let charMap = new Map();
+
+//   for (let i = 0; i < s.length; i++) {
+//     const char = s[i];
+//     if (charMap.has(char) && charMap.get(char) >= start) {
+//       start = charMap.get(char) + 1;
+//     }
+//     charMap.set(char, i);
+//     maxLength = Math.max(maxLength, i - start + 1);
+//   }
+//   return maxLength;
+// }
+
+// console.log(lengthOfLongestSubstring('abcabcbb'));
+// console.log(lengthOfLongestSubstring('accddbbbb '));
+
+// Алгоритм Кадана
+// function maxSubbaraySum(nums) {
+//   let maxSum = nums[0];
+//   let currentSum = nums[0];
+
+//   for (let i = 1; i < nums.length; i++) {
+//     currentSum = Math.max(nums[i], currentSum + nums[i]);
+//     maxSum = Math.max(maxSum, currentSum);
+//   }
+//   return maxSum;
+// }
+
+// console.log(maxSubbaraySum([-2, 1, -3, 4, -1, 2, 1, -5, 4]));
+
+// function sortByFrequency(str) {
+//   let charCount = {};
+//   for (let char of str) {
+//     charCount[char] = (charCount[char] || 0) + 1;
+//   }
+
+//   let charArray = Object.entries(charCount);
+//   charArray.sort((a, b) => b[1] - a[1]);
+//   let result = '';
+//   for (let [char, freq] of charArray) {
+//     result += char.repeat(freq);
+//   }
+//   return result;
+// }
+
+// console.log(sortByFrequency('Молоко'));
