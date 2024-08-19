@@ -1,23 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import FlightTable from './FlightTable';
+import FilterBar from './FilterBar';
+import Pagination from './Pagination';
 import './App.css';
 
-interface Flight {
-  id: string;
-  flightNumber: string;
-  airline: string;
-  city: string;
-  time: string;
-}
-
-const App: React.FC = () => {
-  const [flights, setFlights] = useState<Flight[]>([]);
+const App = () => {
+  const [flights, setFlights] = useState([]);
   const [direction, setDirection] = useState('departure');
   const [search, setSearch] = useState('');
   const [date, setDate] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [sortField, setSortField] = useState<string>('flightNumber');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [error, setError] = useState(null);
+  const [sortField, setSortField] = useState('flightNumber');
+  const [sortDirection, setSortDirection] = useState('asc');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
 
@@ -30,8 +25,8 @@ const App: React.FC = () => {
             params: {
               direction,
               locale: 'ru',
-              from: date,
-              to: date,
+              dateStart: date,
+              dateEnd: date,
             },
           }
         );
@@ -39,7 +34,7 @@ const App: React.FC = () => {
         console.log('API Response:', response.data);
 
         if (response.data && response.data.items) {
-          const formattedFlights = response.data.items.map((item: any) => ({
+          const formattedFlights = response.data.items.map((item) => ({
             id: item.i_id,
             flightNumber: item.flt,
             airline: item.co.name,
@@ -65,17 +60,10 @@ const App: React.FC = () => {
     fetchFlights();
   }, [direction, date]);
 
-  const handleSort = (field: string) => {
+  const handleSort = (field) => {
     const isAsc = sortField === field && sortDirection === 'asc';
     setSortDirection(isAsc ? 'desc' : 'asc');
     setSortField(field);
-  };
-
-  const parseDate = (dateString: string) => {
-    const parsedDate = new Date(dateString);
-    return isNaN(parsedDate.getTime())
-      ? 'Неверная дата'
-      : parsedDate.toLocaleString();
   };
 
   const filteredFlights = flights
@@ -84,17 +72,11 @@ const App: React.FC = () => {
     )
     .sort((a, b) => {
       if (sortDirection === 'asc') {
-        return a[sortField as keyof Flight].localeCompare(
-          b[sortField as keyof Flight]
-        );
+        return a[sortField].localeCompare(b[sortField]);
       } else {
-        return b[sortField as keyof Flight].localeCompare(
-          a[sortField as keyof Flight]
-        );
+        return b[sortField].localeCompare(a[sortField]);
       }
     });
-
-  console.log('Filtered Flights:', filteredFlights);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -102,92 +84,32 @@ const App: React.FC = () => {
 
   const totalPages = Math.ceil(filteredFlights.length / itemsPerPage);
 
-  const handlePageChange = (pageNumber: number) => {
+  const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
   return (
     <div className="App">
-      <div className="filters">
-        <button onClick={() => setDirection('departure')}>Вылет</button>
-        <button onClick={() => setDirection('arrival')}>Прилёт</button>
-        <input
-          type="text"
-          placeholder="Номер рейса"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-        />
-      </div>
-      <table>
-        <thead>
-          <tr>
-            <th>
-              Рейс
-              <button onClick={() => handleSort('flightNumber')}>
-                {sortField === 'flightNumber' &&
-                  (sortDirection === 'asc' ? '▲' : '▼')}
-              </button>
-            </th>
-            <th>
-              Авиакомпания
-              <button onClick={() => handleSort('airline')}>
-                {sortField === 'airline' &&
-                  (sortDirection === 'asc' ? '▲' : '▼')}
-              </button>
-            </th>
-            <th>
-              Город
-              <button onClick={() => handleSort('city')}>
-                {sortField === 'city' && (sortDirection === 'asc' ? '▲' : '▼')}
-              </button>
-            </th>
-            <th>
-              Время
-              <button onClick={() => handleSort('time')}>
-                {sortField === 'time' && (sortDirection === 'asc' ? '▲' : '▼')}
-              </button>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentItems.length ? (
-            currentItems.map((flight, index) => (
-              <tr key={`${flight.flightNumber}-${index}`}>
-                <td>{flight.flightNumber}</td>
-                <td>{flight.airline}</td>
-                <td>{flight.city}</td>
-                <td>{parseDate(flight.time)}</td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="4">{error || 'Данные отсутствуют'}</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-      <div className="pagination">
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
-          Назад
-        </button>
-        <span>
-          Страница {currentPage} из {totalPages}
-        </span>
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-        >
-          Вперед
-        </button>
-      </div>
+      <FilterBar
+        direction={direction}
+        setDirection={setDirection}
+        search={search}
+        setSearch={setSearch}
+        date={date}
+        setDate={setDate}
+      />
+      <FlightTable
+        flights={currentItems}
+        error={error}
+        handleSort={handleSort}
+        sortField={sortField}
+        sortDirection={sortDirection}
+      />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        handlePageChange={handlePageChange}
+      />
     </div>
   );
 };
@@ -196,7 +118,9 @@ export default App;
 
 // estimated_chin_start - это будет датой рейса. Сортировка и фильтрацию по всем полям в пример взять то, что есть в ui ките из райфа.
 // Фильтр по дате сделать, dateStart и dateEnd. И допилить инпут рейса (поиск).
-// 67, 68
+// Начало дня - start, конец - end, использовать setUTCHours, преобразовать объект date и после toISOstring.
+// !!!!! ПЕРВЕСТИ В АПИ - ФЕТЧДАТА
+// Алгоритм дописать в файлике тест внизу
 
 // function countVowels(str) {
 //   console.log(str);
