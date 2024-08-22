@@ -28,8 +28,8 @@ const App = () => {
           city: direction === 'departure' ? item.mar2.city : item.mar1.city,
           time:
             direction === 'departure'
-              ? item.mar2.at || item.estimated_chin_start
-              : item.mar1.dt || item.estimated_chin_start,
+              ? item.t_st_mar || item.estimated_chin_start
+              : item.t_at_mar || item.estimated_chin_start,
         }));
 
         setFlights(formattedFlights);
